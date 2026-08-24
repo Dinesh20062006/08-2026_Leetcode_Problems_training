@@ -1,16 +1,40 @@
 class Solution {
     public boolean isMatch(String s, String p) {
-        if(p.isEmpty())
-        {
-            return s.isEmpty();
-        }
-        boolean firstMatch=(!s.isEmpty()&&(p.charAt(0)==s.charAt(0)||p.charAt(0)=='.'));
+        int m=s.length();
+        int n=p.length();
 
-        if(p.length()>=2 && p.charAt(1)=='*'){
-            return (isMatch(s,p.substring(2))||(firstMatch && isMatch(s.substring(1),p)));
+        boolean [][]dp=new boolean[m+1][n+1];
+
+        dp[0][0]=true;
+        for(int j=1;j<=n;j++)
+        {
+            if(p.charAt(j-1)=='*')
+            {
+                dp[0][j]=dp[0][j-2];
+            }
         }
-        else{
-            return firstMatch&& isMatch(s.substring(1),p.substring(1));
+        for(int i=1;i<=m;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                char sChar=s.charAt(i-1);
+                char pChar=p.charAt(j-1);
+                
+                if(pChar =='.'||pChar==sChar)
+                {
+                    dp[i][j]=dp[i-1][j-1];
+                }
+                else if(pChar=='*')
+                {
+                    char prev=p.charAt(j-2);
+                    dp[i][j]=dp[i][j-2];
+
+                    if(prev=='.'||prev==sChar){
+                        dp[i][j]=dp[i][j]||dp[i-1][j];
+                    }
+                }
+            }
         }
+        return dp[m][n];
     }
 }
